@@ -19,7 +19,7 @@ body {
     --accent-color: #1d3557;
 }
 
-header, main {
+header, #content {
     display: flex;
     justify-content: center;
     align-items: center;
@@ -39,7 +39,7 @@ header {
 
 #grid-container {
     display: grid;
-    grid-template-columns: repeat(3, minmax(200px, 1fr));
+    grid-template-columns: repeat(3, 1fr);
     width: 650px;
     height: 650px;
     border: 3px solid var(--accent-color);

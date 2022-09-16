@@ -45,13 +45,13 @@ header {
     border: 3px solid var(--accent-color);
 }
 
-.gridSquare {
+.gameBoardSquare {
     border: 2px solid brown;
     background-color: #457b9d;
     border: 5px solid var(--accent-color);
 }
 
-.gridSquare:hover {
+.gameBoardSquare:hover {
     background-color: hsl(203, 39%, 50%);
     cursor: pointer;
 }

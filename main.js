@@ -31,10 +31,10 @@ const checker = (() => {
     // playerX represents the user who's marker is X
     let _isItPlayerXTurn = true;
 
-    const checkPlayerTurn = (targetSquare) => {
+    const checkPlayerTurn = (clickedSquare) => {
         _isItPlayerXTurn ?
-            playerX.placeMarker(targetSquare, 'X', targetSquare.dataset.index) :
-            playerO.placeMarker(targetSquare, 'O', targetSquare.dataset.index);
+            playerX.placeMarker(clickedSquare, 'X', clickedSquare.dataset.index) :
+            playerO.placeMarker(clickedSquare, 'O', clickedSquare.dataset.index);
 
         return _isItPlayerXTurn = !_isItPlayerXTurn;
     };

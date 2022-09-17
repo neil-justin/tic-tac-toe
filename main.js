@@ -4,6 +4,18 @@ const gameboard = (() => {
     return { marks };
 })();
 
+const displayController = (() => {
+    const renderMarker = (targetSquare, marker) => {
+        targetSquare.textContent = marker;
+
+        return marker === 'X' ?
+            targetSquare.style.color = '#e63946' :
+            targetSquare.style.color = '#457b9d';
+    };
+
+    return { renderMarker };
+})();
+
 const Player = (marker) => {
     const getPlayerName = () => {
         /* To make things simple. I feel like prompting a dialog box
@@ -12,12 +24,8 @@ const Player = (marker) => {
     }
 
     const placeMarker = (targetSquare, marker, targetSquareIndex) => {
-        targetSquare.textContent = marker;
-
-        marker === 'X' ?
-            targetSquare.style.color = '#e63946' :
-            targetSquare.style.color = '#457b9d';
-
+        displayController.renderMarker(targetSquare, marker);
+        
         return gameboard.marks[targetSquareIndex] = marker;
     }
 

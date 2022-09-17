@@ -19,7 +19,8 @@ body {
     --accent-color: #1d3557;
 }
 
-header, #content {
+header,
+#content {
     display: flex;
     justify-content: center;
     align-items: center;
@@ -29,8 +30,11 @@ header {
     margin-top: 10px;
     height: 10vh;
     width: 100%;
-    font-size: 32px;
     color: var(--accent-color);
+}
+
+h1 {
+    font-size: 70px;
 }
 
 #content {
@@ -40,18 +44,26 @@ header {
 #grid-container {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
-    width: 650px;
-    height: 650px;
+    width: 450px;
+    height: 450px;
     border: 3px solid var(--accent-color);
 }
 
 .gameboardSquare {
-    border: 2px solid brown;
-    background-color: #457b9d;
-    border: 5px solid var(--accent-color);
+    /* for some reason, this helps prevent the marker from taking too much height */
+    line-height: 0%;
+    font-size: 85px;
+    font-weight: bold;
+    font-family: serif;
+    color: #457b9d;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #a8dadc;
+    border: 3px solid var(--accent-color);
 }
 
 .gameboardSquare:hover {
-    background-color: hsl(203, 39%, 50%);
+    background-color: hsl(182, 43%, 70%);
     cursor: pointer;
 }

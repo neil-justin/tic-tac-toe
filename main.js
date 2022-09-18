@@ -68,6 +68,7 @@ const checker = (() => {
                 && gameboardArray[8] === marker):
             case (gameboardArray[2] === marker && gameboardArray[4] === marker
                 && gameboardArray[6] === marker):
+                
                 if (marker === 'X') {
                     console.log(`Player ${playerX.getPlayerName()}'s win!`);
                 } else {
@@ -79,7 +80,7 @@ const checker = (() => {
     return { checkPlayerTurn, checkWinningPattern };
 })();
 
-const gameboardSquares = document.querySelectorAll('.gameboardSquare');
+const gameboardSquares = document.querySelectorAll('.gameboard-square');
 gameboardSquares.forEach(square => {
     square.addEventListener('click', (event) => {
         if (event.target.textContent === '') {

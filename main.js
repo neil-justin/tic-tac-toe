@@ -25,7 +25,7 @@ const Player = (marker) => {
 
     const placeMarker = (targetSquare, marker, targetSquareIndex) => {
         displayController.renderMarker(targetSquare, marker);
-        
+
         return gameboard.marks[targetSquareIndex] = marker;
     }
 
@@ -47,7 +47,36 @@ const checker = (() => {
         return _isItPlayerXTurn = !_isItPlayerXTurn;
     };
 
-    return { checkPlayerTurn };
+    const checkWinningPattern = (gameboardArray, marker) => {
+        switch (true) {
+            // horizontal patterns
+            case (gameboardArray[0] === marker && gameboardArray[1] === marker
+                && gameboardArray[2] === marker):
+            case (gameboardArray[3] === marker && gameboardArray[4] === marker
+                && gameboardArray[5] === marker):
+            case (gameboardArray[6] === marker && gameboardArray[7] === marker
+                && gameboardArray[8] === marker):
+            // vertical patterns
+            case (gameboardArray[0] === marker && gameboardArray[3] === marker
+                && gameboardArray[6] === marker):
+            case (gameboardArray[1] === marker && gameboardArray[4] === marker
+                && gameboardArray[7] === marker):
+            case (gameboardArray[2] === marker && gameboardArray[5] === marker
+                && gameboardArray[8] === marker):
+            // diagonal patterns
+            case (gameboardArray[0] === marker && gameboardArray[4] === marker
+                && gameboardArray[8] === marker):
+            case (gameboardArray[2] === marker && gameboardArray[4] === marker
+                && gameboardArray[6] === marker):
+                if (marker === 'X') {
+                    console.log(`Player ${playerX.getPlayerName()}'s win!`);
+                } else {
+                    console.log(`Player ${playerO.getPlayerName()}'s win!`);
+                }
+        }
+    };
+
+    return { checkPlayerTurn, checkWinningPattern };
 })();
 
 const gameboardSquares = document.querySelectorAll('.gameboardSquare');
@@ -55,6 +84,16 @@ gameboardSquares.forEach(square => {
     square.addEventListener('click', (event) => {
         if (event.target.textContent === '') {
             checker.checkPlayerTurn(event.target);
+
+            const totalInputtedMarkers = gameboard.marks
+                .filter((mark) => mark !== 'undefined').length;
+
+            /* the least amount of moves before either side could get
+            a winning pattern is 5, right? */
+            if (totalInputtedMarkers >= 5) {
+                checker.checkWinningPattern(
+                    gameboard.marks, /* marker = */ event.target.textContent);
+            }
         }
     });
 });

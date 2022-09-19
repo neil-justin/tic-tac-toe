@@ -78,6 +78,8 @@ const checker = (() => {
         [2, 4, 6],
     ]
 
+    let isGameOver = false;
+
     const checkWinningPattern = (marker, patterns, gameboard) => {
         const isEqualToMarker = (element) => {
             return gameboard[element] === marker;
@@ -88,28 +90,36 @@ const checker = (() => {
                 displayController.highlightWinningPattern(marker,
                     patterns[i][0], patterns[i][1], patterns[i][2]);
 
+                checker.isGameOver = true;
+
                 return patterns[i];
             }
         }
     };
 
-    return { checkPlayerTurn, winningPatterns, checkWinningPattern };
+    return { checkPlayerTurn, winningPatterns, isGameOver, checkWinningPattern };
 })();
 
 const gameboardSquares = document.querySelectorAll('.gameboard-square');
 gameboardSquares.forEach(square => {
     square.addEventListener('click', (event) => {
         if (event.target.textContent === '') {
-            checker.checkPlayerTurn(event.target);
+            if (checker.isGameOver) {
+                gameboardSquares.forEach(square => {
+                    square.style.pointerEvents = 'none';
+                });
+            } else {
+                checker.checkPlayerTurn(event.target);
 
-            const totalInputtedMarkers = gameboard.marks
-                .filter((mark) => mark !== 'undefined').length;
+                const totalInputtedMarkers = gameboard.marks
+                    .filter((mark) => mark !== 'undefined').length;
 
-            /* the least amount of moves before either side could get
-            a winning pattern is 5, right? */
-            if (totalInputtedMarkers >= 5) {
-                checker.checkWinningPattern(event.target.textContent,
-                    checker.winningPatterns, gameboard.marks);
+                /* the least amount of moves before either side could get
+                a winning pattern is 5, right? */
+                if (totalInputtedMarkers >= 5) {
+                    checker.checkWinningPattern(event.target.textContent,
+                        checker.winningPatterns, gameboard.marks);
+                }
             }
         }
     });

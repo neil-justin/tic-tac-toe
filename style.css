@@ -12,7 +12,6 @@ body {
     background-color: #f1faee;
     font-family: 'Roboto', sans-serif;
     padding: 20px;
-    min-width: 675px;
 }
 
 :root {
@@ -27,18 +26,12 @@ header,
 }
 
 header {
-    margin-top: 10px;
-    height: 10vh;
-    width: 100%;
+    margin: 10px 30px 30px;
     color: var(--accent-color);
 }
 
 h1 {
     font-size: 70px;
-}
-
-#content {
-    height: 85vh;
 }
 
 #gameboard-container {

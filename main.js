@@ -79,6 +79,7 @@ const checker = (() => {
     ]
 
     let isGameOver = false;
+    let isThereAWinner;
 
     const checkWinningPattern = (marker, patterns, gameboard) => {
         const isEqualToMarker = (element) => {
@@ -91,34 +92,62 @@ const checker = (() => {
                     patterns[i][0], patterns[i][1], patterns[i][2]);
 
                 checker.isGameOver = true;
+                checker.isThereAWinner = true;
 
                 return patterns[i];
             }
         }
     };
 
-    return { checkPlayerTurn, winningPatterns, isGameOver, checkWinningPattern };
+    let totalInputtedMarkers = 0;
+
+    const checkIfDraw = () => {
+        if (!isGameOver && !isThereAWinner) {
+            checker.isGameOver = true;
+            checker.isThereAWinner = false;
+        }
+
+        return checker.isGameOver, checker.isThereAWinner;
+    };
+
+    return {
+        checkPlayerTurn,
+        winningPatterns,
+        isGameOver,
+        isThereAWinner,
+        checkWinningPattern,
+        totalInputtedMarkers,
+        checkIfDraw,
+    };
 })();
 
 const gameboardSquares = document.querySelectorAll('.gameboard-square');
 gameboardSquares.forEach(square => {
     square.addEventListener('click', (event) => {
         if (event.target.textContent === '') {
-            if (checker.isGameOver) {
-                gameboardSquares.forEach(square => {
-                    square.style.pointerEvents = 'none';
-                });
-            } else {
-                checker.checkPlayerTurn(event.target);
+            checker.checkPlayerTurn(event.target);
 
-                const totalInputtedMarkers = gameboard.marks
-                    .filter((mark) => mark !== 'undefined').length;
+            checker.totalInputtedMarkers++;
+            /* the least amount of moves before either side could get
+            a winning pattern is 5, right? */
+            if (checker.totalInputtedMarkers >= 5) {
+                checker.checkWinningPattern(event.target.textContent,
+                    checker.winningPatterns, gameboard.marks);
 
-                /* the least amount of moves before either side could get
-                a winning pattern is 5, right? */
-                if (totalInputtedMarkers >= 5) {
-                    checker.checkWinningPattern(event.target.textContent,
-                        checker.winningPatterns, gameboard.marks);
+                if (checker.totalInputtedMarkers === 9) {
+                    checker.checkIfDraw();
+                }
+
+                if (checker.isGameOver) {
+                    gameboardSquares.forEach(square => {
+                        square.style.pointerEvents = 'none';
+                    });
+
+                    if (!checker.isThereAWinner) {
+                        gameboardSquares.forEach(square => {
+                            square.style.color = '#1d3557';
+                        });
+                    }
                 }
             }
         }

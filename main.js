@@ -93,37 +93,7 @@ const checker = (() => {
         }
     };
 
-    const checkWinningPattern1 = (gameboardArray, marker) => {
-        switch (true) {
-            // horizontal patterns
-            case (gameboardArray[0] === marker && gameboardArray[1] === marker
-                && gameboardArray[2] === marker):
-            case (gameboardArray[3] === marker && gameboardArray[4] === marker
-                && gameboardArray[5] === marker):
-            case (gameboardArray[6] === marker && gameboardArray[7] === marker
-                && gameboardArray[8] === marker):
-            // vertical patterns
-            case (gameboardArray[0] === marker && gameboardArray[3] === marker
-                && gameboardArray[6] === marker):
-            case (gameboardArray[1] === marker && gameboardArray[4] === marker
-                && gameboardArray[7] === marker):
-            case (gameboardArray[2] === marker && gameboardArray[5] === marker
-                && gameboardArray[8] === marker):
-            // diagonal patterns
-            case (gameboardArray[0] === marker && gameboardArray[4] === marker
-                && gameboardArray[8] === marker):
-            case (gameboardArray[2] === marker && gameboardArray[4] === marker
-                && gameboardArray[6] === marker):
-
-                if (marker === 'X') {
-                    console.log(`Player ${playerX.getPlayerName()}'s win!`);
-                } else {
-                    console.log(`Player ${playerO.getPlayerName()}'s win!`);
-                }
-        }
-    };
-
-    return { checkPlayerTurn, winningPatterns, checkWinningPattern1, checkWinningPattern };
+    return { checkPlayerTurn, winningPatterns, checkWinningPattern };
 })();
 
 const gameboardSquares = document.querySelectorAll('.gameboard-square');

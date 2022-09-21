@@ -43,7 +43,7 @@ const Player = (marker) => {
         return marker;
     }
 
-    const placeMarker = (targetSquare, marker, targetSquareIndex) => {
+    const placeMarker = (targetSquare, targetSquareIndex) => {
         displayController.renderMarker(targetSquare, marker);
 
         return gameboard.marks[targetSquareIndex] = marker;
@@ -61,8 +61,8 @@ const checker = (() => {
 
     const checkPlayerTurn = (clickedSquare) => {
         _isItPlayerXTurn ?
-            playerX.placeMarker(clickedSquare, 'X', clickedSquare.dataset.index) :
-            playerO.placeMarker(clickedSquare, 'O', clickedSquare.dataset.index);
+            playerX.placeMarker(clickedSquare, clickedSquare.dataset.index) :
+            playerO.placeMarker(clickedSquare, clickedSquare.dataset.index);
 
         return _isItPlayerXTurn = !_isItPlayerXTurn;
     };
@@ -81,20 +81,21 @@ const checker = (() => {
     let isGameOver = false;
     let isThereAWinner;
 
-    const checkWinningPattern = (marker, patterns, gameboard) => {
-        const isEqualToMarker = (element) => {
-            return gameboard[element] === marker;
+    const checkWinningPattern = (marker, gameboard) => {
+        const isEqualToMarker = (square) => {
+            return gameboard[square] === marker;
         };
 
-        for (let i = 0; i <= patterns.length - 1; i++) {
-            if (patterns[i].every(isEqualToMarker)) {
+        for (let i = 0; i <= winningPatterns.length - 1; i++) {
+            if (winningPatterns[i].every(isEqualToMarker)) {
                 displayController.highlightWinningPattern(marker,
-                    patterns[i][0], patterns[i][1], patterns[i][2]);
+                    winningPatterns[i][0], winningPatterns[i][1],
+                    winningPatterns[i][2]);
 
                 checker.isGameOver = true;
                 checker.isThereAWinner = true;
 
-                return patterns[i];
+                return winningPatterns[i];
             }
         }
     };
@@ -132,7 +133,7 @@ gameboardSquares.forEach(square => {
             a winning pattern is 5, right? */
             if (checker.totalInputtedMarkers >= 5) {
                 checker.checkWinningPattern(event.target.textContent,
-                    checker.winningPatterns, gameboard.marks);
+                    gameboard.marks);
 
                 if (checker.totalInputtedMarkers === 9) {
                     checker.checkIfDraw();
@@ -142,12 +143,6 @@ gameboardSquares.forEach(square => {
                     gameboardSquares.forEach(square => {
                         square.style.pointerEvents = 'none';
                     });
-
-                    if (!checker.isThereAWinner) {
-                        gameboardSquares.forEach(square => {
-                            square.style.color = '#1d3557';
-                        });
-                    }
                 }
             }
         }

@@ -13,25 +13,25 @@ const displayController = (() => {
             targetSquare.style.color = '#457b9d';
     };
 
-    const highlightWinningPattern = (marker, square1, square2, square3) => {
+    const highlightWinningPattern = (winningMarker, square1, square2, square3) => {
         const winningSquares = document.querySelectorAll(`[data-index='${square1}'],
             [data-index='${square2}'], [data-index='${square3}']`);
 
-        switch (marker) {
+        switch (winningMarker) {
             case 'X':
                 winningSquares.forEach(square => {
                     // a lighter shade of the red
                     square.style.backgroundColor = 'hsl(355, 78%, 76%)';
-                    square.style.color = 'whitesmoke';
                 });
                 break;
             case 'O':
                 winningSquares.forEach(square => {
                     square.style.backgroundColor = 'hsl(203, 39%, 64%)';
-                    square.style.color = 'whitesmoke';
                 });
         }
-    }
+
+        winningSquares.forEach(square => square.classList.add('winning-square'));
+    };
 
     const playAgainBtnCntr = document.querySelector('[method=dialog]');
     const dialogBox = document.querySelector('#game-result-dialog-box');
@@ -172,3 +172,4 @@ gameboardSquares.forEach(square => {
         }
     });
 });
+

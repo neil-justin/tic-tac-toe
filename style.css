@@ -63,6 +63,10 @@ h1 {
     cursor: pointer;
 }
 
+.winning-square {
+    color: whitesmoke !important;
+}
+
 #game-result-dialog-box {
     position: absolute;
     top: 42%;

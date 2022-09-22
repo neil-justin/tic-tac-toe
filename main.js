@@ -97,7 +97,7 @@ const checker = (() => {
                     _winningPatterns[i][2]);
 
                 checker.isGameOver = true;
-                checker._gameWinner = marker;
+                _gameWinner = marker;
                 break;
             }
 
@@ -115,6 +115,7 @@ const checker = (() => {
         gameResult.setAttribute('id', 'game-result-text');
         dialogBox.insertBefore(gameResult, playAgainBtnCntr);
 
+        console.log(_gameWinner);
         switch (_gameWinner) {
             case 'X':
             case 'O':

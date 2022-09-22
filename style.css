@@ -34,12 +34,15 @@ h1 {
     font-size: 70px;
 }
 
+#content {}
+
 #gameboard-container {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
     width: 450px;
     height: 450px;
     border: 3px solid var(--accent-color);
+    position: relative;
 }
 
 .gameboard-square {
@@ -58,4 +61,45 @@ h1 {
 .gameboard-square:hover {
     background-color: hsl(182, 43%, 70%);
     cursor: pointer;
+}
+
+#game-result-dialog-box {
+    position: absolute;
+    top: 42%;
+    left: 50%;
+    /* this visually center the dialog box horizontally and vertically */
+    transform: translate(-50%, -50%);
+    border: 0;
+    border-radius: 5px;
+    width: 300px;
+    height: fit-content;
+    padding: 25px;
+}
+
+#game-result-text {
+    font-size: 36px;
+    font-weight: bold;
+    color: var(--accent-color);
+    text-align: center;
+    margin-bottom: 15px;
+}
+
+#play-again-btn-cntr {
+    display: flex;
+    justify-content: center;
+    margin: 5px;
+}
+
+#play-again-btn {
+    appearance: none;
+    border: 0px;
+    font-size: 16px;
+    padding: 8px 15px;
+    background-color: hsl(0, 0%, 82%);
+    color: black;
+}
+
+#play-again-btn:hover {
+    cursor: pointer;
+    background-color: hsl(0, 0%, 77%);
 }

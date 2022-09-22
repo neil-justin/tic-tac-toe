@@ -33,7 +33,17 @@ const displayController = (() => {
         }
     }
 
-    return { renderMarker, highlightWinningPattern };
+    const playAgainBtnCntr = document.querySelector('[method=dialog]');
+    const dialogBox = document.querySelector('#game-result-dialog-box');
+    const playAgainBtn = document.querySelector('#play-again-btn');
+
+    return {
+        renderMarker,
+        highlightWinningPattern,
+        playAgainBtnCntr,
+        dialogBox,
+        playAgainBtn,
+    };
 })();
 
 const Player = (marker) => {
@@ -79,7 +89,7 @@ const checker = (() => {
     ]
 
     let isGameOver = false;
-    let isThereAWinner;
+    let gameWinner;
 
     const checkWinningPattern = (marker, gameboard) => {
         const isEqualToMarker = (square) => {
@@ -93,7 +103,7 @@ const checker = (() => {
                     winningPatterns[i][2]);
 
                 checker.isGameOver = true;
-                checker.isThereAWinner = true;
+                checker.gameWinner = marker;
 
                 return winningPatterns[i];
             }
@@ -102,23 +112,30 @@ const checker = (() => {
 
     let totalInputtedMarkers = 0;
 
-    const checkIfDraw = () => {
-        if (!isGameOver && !isThereAWinner) {
-            checker.isGameOver = true;
-            checker.isThereAWinner = false;
+    const announceGameWinner = (dialogBox, playAgainBtnCntr) => {
+        const gameResult = document.createElement('p');
+        gameResult.setAttribute('id', 'game-result-text');
+        dialogBox.insertBefore(gameResult, playAgainBtnCntr);
+
+        switch (checker.gameWinner) {
+            case 'X':
+            case 'O':
+                gameResult.textContent = `Player ${checker.gameWinner}'s win`;
+                break;
+            case undefined:
+                gameResult.textContent = `Draw`;
         }
 
-        return checker.isGameOver, checker.isThereAWinner;
-    };
+        return gameWinner;
+    }
 
     return {
         checkPlayerTurn,
         winningPatterns,
         isGameOver,
-        isThereAWinner,
         checkWinningPattern,
         totalInputtedMarkers,
-        checkIfDraw,
+        announceGameWinner,
     };
 })();
 
@@ -135,14 +152,21 @@ gameboardSquares.forEach(square => {
                 checker.checkWinningPattern(event.target.textContent,
                     gameboard.marks);
 
-                if (checker.totalInputtedMarkers === 9) {
-                    checker.checkIfDraw();
+                if (checker.totalInputtedMarkers === 9 && !checker.gameWinner) {
+                    checker.isGameOver = true;
                 }
 
                 if (checker.isGameOver) {
                     gameboardSquares.forEach(square => {
                         square.style.pointerEvents = 'none';
                     });
+
+                    setTimeout(() => {
+                        displayController.dialogBox.showModal();
+                    }, 2000);
+
+                    checker.announceGameWinner(displayController.dialogBox,
+                        displayController.playAgainBtnCntr);
                 }
             }
         }

@@ -1,14 +1,14 @@
 const gameboard = (() => {
     const marks = [];
 
-    return { marks };
+    return { marks, };
 })();
 
 const displayController = (() => {
     const renderMarker = (targetSquare, marker) => {
         targetSquare.textContent = marker;
 
-        return marker === 'X' ?
+        marker === 'X' ?
             targetSquare.style.color = '#e63946' :
             targetSquare.style.color = '#457b9d';
     };
@@ -33,33 +33,27 @@ const displayController = (() => {
         winningSquares.forEach(square => square.classList.add('winning-square'));
     };
 
-    const playAgainBtnCntr = document.querySelector('[method=dialog]');
     const dialogBox = document.querySelector('#game-result-dialog-box');
+    const playAgainBtnCntr = document.querySelector('[method=dialog]');
     const playAgainBtn = document.querySelector('#play-again-btn');
 
     return {
         renderMarker,
         highlightWinningPattern,
-        playAgainBtnCntr,
         dialogBox,
+        playAgainBtnCntr,
         playAgainBtn,
     };
 })();
 
 const Player = (marker) => {
-    const getPlayerName = () => {
-        /* To make things simple. I feel like prompting a dialog box
-            just to ask for players's name is a bother for the players */
-        return marker;
-    }
-
     const placeMarker = (targetSquare, targetSquareIndex) => {
         displayController.renderMarker(targetSquare, marker);
 
-        return gameboard.marks[targetSquareIndex] = marker;
-    }
+        gameboard.marks[targetSquareIndex] = marker;
+    };
 
-    return { getPlayerName, placeMarker, }
+    return { placeMarker, };
 };
 
 const playerX = Player('X');
@@ -74,10 +68,10 @@ const checker = (() => {
             playerX.placeMarker(clickedSquare, clickedSquare.dataset.index) :
             playerO.placeMarker(clickedSquare, clickedSquare.dataset.index);
 
-        return _isItPlayerXTurn = !_isItPlayerXTurn;
+        _isItPlayerXTurn = !_isItPlayerXTurn;
     };
 
-    const winningPatterns = [
+    const _winningPatterns = [
         [0, 1, 2],
         [3, 4, 5],
         [6, 7, 8],
@@ -86,56 +80,57 @@ const checker = (() => {
         [2, 5, 8],
         [0, 4, 8],
         [2, 4, 6],
-    ]
+    ];
 
     let isGameOver = false;
-    let gameWinner;
+    let _gameWinner;
 
-    const checkWinningPattern = (marker, gameboard) => {
+    const checkGameStatus = (marker, gameboard) => {
         const isEqualToMarker = (square) => {
             return gameboard[square] === marker;
         };
 
-        for (let i = 0; i <= winningPatterns.length - 1; i++) {
-            if (winningPatterns[i].every(isEqualToMarker)) {
+        for (let i = 0; i <= _winningPatterns.length - 1; i++) {
+            if (_winningPatterns[i].every(isEqualToMarker)) {
                 displayController.highlightWinningPattern(marker,
-                    winningPatterns[i][0], winningPatterns[i][1],
-                    winningPatterns[i][2]);
+                    _winningPatterns[i][0], _winningPatterns[i][1],
+                    _winningPatterns[i][2]);
 
                 checker.isGameOver = true;
-                checker.gameWinner = marker;
+                checker._gameWinner = marker;
+                break;
+            }
 
-                return winningPatterns[i];
+            if (totalInputtedMarkers === 9 && !_gameWinner) {
+                checker.isGameOver = true;
+                break;
             }
         }
     };
 
     let totalInputtedMarkers = 0;
 
-    const announceGameWinner = (dialogBox, playAgainBtnCntr) => {
+    const announceGameResult = (dialogBox, playAgainBtnCntr) => {
         const gameResult = document.createElement('p');
         gameResult.setAttribute('id', 'game-result-text');
         dialogBox.insertBefore(gameResult, playAgainBtnCntr);
 
-        switch (checker.gameWinner) {
+        switch (_gameWinner) {
             case 'X':
             case 'O':
-                gameResult.textContent = `Player ${checker.gameWinner}'s win`;
+                gameResult.textContent = `Player ${_gameWinner}'s win`;
                 break;
             case undefined:
                 gameResult.textContent = `Draw`;
         }
-
-        return gameWinner;
     }
 
     return {
         checkPlayerTurn,
-        winningPatterns,
         isGameOver,
-        checkWinningPattern,
+        checkGameStatus,
         totalInputtedMarkers,
-        announceGameWinner,
+        announceGameResult,
     };
 })();
 
@@ -149,12 +144,8 @@ gameboardSquares.forEach(square => {
             /* the least amount of moves before either side could get
             a winning pattern is 5, right? */
             if (checker.totalInputtedMarkers >= 5) {
-                checker.checkWinningPattern(event.target.textContent,
+                checker.checkGameStatus(event.target.textContent,
                     gameboard.marks);
-
-                if (checker.totalInputtedMarkers === 9 && !checker.gameWinner) {
-                    checker.isGameOver = true;
-                }
 
                 if (checker.isGameOver) {
                     gameboardSquares.forEach(square => {
@@ -165,7 +156,7 @@ gameboardSquares.forEach(square => {
                         displayController.dialogBox.showModal();
                     }, 2000);
 
-                    checker.announceGameWinner(displayController.dialogBox,
+                    checker.announceGameResult(displayController.dialogBox,
                         displayController.playAgainBtnCntr);
                 }
             }
@@ -173,3 +164,4 @@ gameboardSquares.forEach(square => {
     });
 });
 
+displayController.playAgainBtn.addEventListener('click', gameboard.reset);

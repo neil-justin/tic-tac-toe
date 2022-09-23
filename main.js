@@ -191,8 +191,9 @@ gameboardSquares.forEach(square => {
 
             checker.incrementTotalInputtedMarkers();
             /* The least amount of moves before either side could get a winning
-            pattern is 5 moves, right? This has to be here in order to not
-            waste the computer's energy */
+            pattern is 5 moves, right? It would be a waste of time to check if
+            there's a 3-in-a-row pattern or if the game results in a draw if
+            the totalInputtedMarkers is still below 5. Hope that make sense */
             if (checker.totalInputtedMarkers >= 5) {
                 checker.checkGameStatus(event.target.textContent,
                     gameboard.marks);

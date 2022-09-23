@@ -1,7 +1,17 @@
 const gameboard = (() => {
     const marks = [];
 
-    return { marks, };
+    const insertMarker = (clickedSquareIndex, marker) => {
+        gameboard.marks[clickedSquareIndex] = marker;
+    };
+
+    const emptyMarks = () => {
+        /* This was more safer and faster as compared to "marks = []" when
+            emptying an array, as it also empties other references */
+        gameboard.marks.length = 0;
+    };
+
+    return { marks, insertMarker, emptyMarks };
 })();
 
 const displayController = (() => {
@@ -13,24 +23,44 @@ const displayController = (() => {
             targetSquare.style.color = '#457b9d';
     };
 
+    /* I have to declare this using the 'let' keyword because I will use this
+        as a reference later on to revert the squares to their initial state. */
+    let _winningSquares;
+
     const highlightWinningPattern = (winningMarker, square1, square2, square3) => {
-        const winningSquares = document.querySelectorAll(`[data-index='${square1}'],
+        _winningSquares = document.querySelectorAll(`[data-index='${square1}'],
             [data-index='${square2}'], [data-index='${square3}']`);
 
         switch (winningMarker) {
             case 'X':
-                winningSquares.forEach(square => {
+                _winningSquares.forEach(square => {
                     // a lighter shade of the red
                     square.style.backgroundColor = 'hsl(355, 78%, 76%)';
                 });
                 break;
             case 'O':
-                winningSquares.forEach(square => {
+                _winningSquares.forEach(square => {
                     square.style.backgroundColor = 'hsl(203, 39%, 64%)';
                 });
         }
 
-        winningSquares.forEach(square => square.classList.add('winning-square'));
+        _winningSquares.forEach(square => square.classList.add('winning-square'));
+    };
+
+    const clearGameboard = () => {
+        if (!checker.gameWinner) {
+            _winningSquares.forEach(square => {
+                square.classList.remove('winning-square');
+                square.style.backgroundColor = '#a8dadc';
+            });
+        }
+
+        const gameboardSquares = document.querySelectorAll('.gameboard-square');
+        gameboardSquares.forEach(square => {
+            // this again allow the players from clicking on the gameboard
+            square.style.pointerEvents = 'auto';
+            square.textContent = ''
+        });
     };
 
     const dialogBox = document.querySelector('#game-result-dialog-box');
@@ -40,6 +70,7 @@ const displayController = (() => {
     return {
         renderMarker,
         highlightWinningPattern,
+        clearGameboard,
         dialogBox,
         playAgainBtnCntr,
         playAgainBtn,
@@ -48,9 +79,8 @@ const displayController = (() => {
 
 const Player = (marker) => {
     const placeMarker = (targetSquare, targetSquareIndex) => {
+        gameboard.insertMarker(targetSquareIndex, marker);
         displayController.renderMarker(targetSquare, marker);
-
-        gameboard.marks[targetSquareIndex] = marker;
     };
 
     return { placeMarker, };
@@ -83,7 +113,7 @@ const checker = (() => {
     ];
 
     let isGameOver = false;
-    let _gameWinner;
+    let gameWinner;
 
     const checkGameStatus = (marker, gameboard) => {
         const isEqualToMarker = (square) => {
@@ -97,41 +127,59 @@ const checker = (() => {
                     _winningPatterns[i][2]);
 
                 checker.isGameOver = true;
-                _gameWinner = marker;
+                checker.gameWinner = marker;
                 break;
             }
+        }
 
-            if (totalInputtedMarkers === 9 && !_gameWinner) {
-                checker.isGameOver = true;
-                break;
-            }
+        if (checker.totalInputtedMarkers === 9 && !checker.gameWinner) {
+            checker.isGameOver = true;
         }
     };
 
     let totalInputtedMarkers = 0;
+
+    const incrementTotalInputtedMarkers = () => {
+        checker.totalInputtedMarkers++;
+    };
 
     const announceGameResult = (dialogBox, playAgainBtnCntr) => {
         const gameResult = document.createElement('p');
         gameResult.setAttribute('id', 'game-result-text');
         dialogBox.insertBefore(gameResult, playAgainBtnCntr);
 
-        console.log(_gameWinner);
-        switch (_gameWinner) {
+        switch (checker.gameWinner) {
             case 'X':
             case 'O':
-                gameResult.textContent = `Player ${_gameWinner}'s win`;
+                gameResult.textContent = `Player ${checker.gameWinner}'s win`;
                 break;
             case undefined:
                 gameResult.textContent = `Draw`;
         }
-    }
+    };
+
+    const removeGameResult = () => {
+        const gameResult = document.querySelector('#game-result-text');
+        gameResult.remove();
+    };
+
+    const revertVariables = () => {
+        _isItPlayerXTurn = true;
+        checker.isGameOver = false;
+        checker.gameWinner = undefined;
+        checker.totalInputtedMarkers = 0;
+    };
 
     return {
         checkPlayerTurn,
         isGameOver,
+        gameWinner,
         checkGameStatus,
         totalInputtedMarkers,
+        incrementTotalInputtedMarkers,
         announceGameResult,
+        removeGameResult,
+        revertVariables,
     };
 })();
 
@@ -141,9 +189,10 @@ gameboardSquares.forEach(square => {
         if (event.target.textContent === '') {
             checker.checkPlayerTurn(event.target);
 
-            checker.totalInputtedMarkers++;
-            /* the least amount of moves before either side could get
-            a winning pattern is 5, right? */
+            checker.incrementTotalInputtedMarkers();
+            /* The least amount of moves before either side could get a winning
+            pattern is 5 moves, right? This has to be here in order to not
+            waste the computer's energy */
             if (checker.totalInputtedMarkers >= 5) {
                 checker.checkGameStatus(event.target.textContent,
                     gameboard.marks);
@@ -165,4 +214,9 @@ gameboardSquares.forEach(square => {
     });
 });
 
-displayController.playAgainBtn.addEventListener('click', gameboard.reset);
+displayController.playAgainBtn.addEventListener('click', () => {
+    checker.removeGameResult();
+    gameboard.emptyMarks();
+    checker.revertVariables();
+    displayController.clearGameboard();
+});

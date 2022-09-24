@@ -48,7 +48,7 @@ const displayController = (() => {
     };
 
     const clearGameboard = () => {
-        if (!checker.gameWinner) {
+        if (checker.gameWinner) {
             _winningSquares.forEach(square => {
                 square.classList.remove('winning-square');
                 square.style.backgroundColor = '#a8dadc';
@@ -218,6 +218,6 @@ gameboardSquares.forEach(square => {
 displayController.playAgainBtn.addEventListener('click', () => {
     checker.removeGameResult();
     gameboard.emptyMarks();
-    checker.revertVariables();
     displayController.clearGameboard();
+    checker.revertVariables();
 });

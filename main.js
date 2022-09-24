@@ -57,9 +57,8 @@ const displayController = (() => {
 
         const gameboardSquares = document.querySelectorAll('.gameboard-square');
         gameboardSquares.forEach(square => {
-            // this again allow the players from clicking on the gameboard
-            square.style.pointerEvents = 'auto';
             square.textContent = ''
+            square.removeAttribute('style');
         });
     };
 

@@ -12,43 +12,49 @@ body {
     background-color: #f1faee;
     font-family: 'Roboto', sans-serif;
     padding: 20px;
+    min-width: 540px;
 }
 
 :root {
     --accent-color: #1d3557;
 }
 
-header,
-#content {
+header {
     display: flex;
     justify-content: center;
-    align-items: center;
-}
-
-header {
     margin: 10px 30px 30px;
     color: var(--accent-color);
 }
 
 h1 {
-    font-size: 70px;
+    font-size: 4.37500rem;
 }
 
-#content {}
+#content {
+    display: grid;
+    justify-items: center;
+    row-gap: 20px;
+}
+
+#announcer-message {
+    font-size: 1.4rem;
+    text-align: center;
+    width: 450px;
+}
 
 #gameboard-container {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
-    width: 450px;
-    height: 450px;
     border: 3px solid var(--accent-color);
     position: relative;
+    width: 450px;
+    height: 450px;
 }
 
 .gameboard-square {
     /* for some reason, this helps prevent the marker from taking too much height */
     line-height: 0%;
-    font-size: 85px;
+    font-size: 5.3125rem;
     font-weight: bold;
     font-family: serif;
     display: flex;
@@ -81,7 +87,7 @@ h1 {
 }
 
 #game-result-text {
-    font-size: 36px;
+    font-size: 2.25rem;
     font-weight: bold;
     color: var(--accent-color);
     text-align: center;
@@ -97,7 +103,7 @@ h1 {
 #play-again-btn {
     appearance: none;
     border: 0px;
-    font-size: 16px;
+    font-size: 1rem;
     padding: 8px 15px;
     background-color: hsl(0, 0%, 82%);
     color: black;

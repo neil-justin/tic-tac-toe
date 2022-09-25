@@ -63,16 +63,56 @@ const displayController = (() => {
     };
 
     const dialogBox = document.querySelector('#game-result-dialog-box');
-    const playAgainBtnCntr = document.querySelector('[method=dialog]');
+    const _playAgainBtnCntr = document.querySelector('[method=dialog]');
     const playAgainBtn = document.querySelector('#play-again-btn');
+
+    const _mainContent = document.querySelector('#content');
+    const _gameboardContainer = document.querySelector('#gameboard-container');
+    const _announcerMessage = document.createElement('p');
+    _announcerMessage.setAttribute('id', 'announcer-message');
+    _mainContent.insertBefore(_announcerMessage, _gameboardContainer);
+
+    const displayAnnouncerMessage = (isItPlayerXTurn) => {
+        if (checker.isGameOver) {
+            _announcerMessage.textContent = 'Game Over...';
+        } else {
+            isItPlayerXTurn ?
+                _announcerMessage.textContent = 'Player X\'s turn' :
+                _announcerMessage.textContent = 'Player O\'s turn';
+        }
+    };
+
+    const announceGameResult = () => {
+        const gameResult = document.createElement('p');
+        gameResult.setAttribute('id', 'game-result-text');
+        displayController.dialogBox.insertBefore(gameResult, _playAgainBtnCntr);
+
+        switch (checker.gameWinner) {
+            case 'X':
+            case 'O':
+                gameResult.textContent = `Player ${checker.gameWinner}'s win`;
+                break;
+            case undefined:
+                gameResult.textContent = `Draw`;
+        }
+    };
+
+    const removePromptedTexts = () => {
+        const gameResult = document.querySelector('#game-result-text');
+        gameResult.remove();
+
+        _announcerMessage.textContent = '';
+    };
 
     return {
         renderMarker,
         highlightWinningPattern,
         clearGameboard,
         dialogBox,
-        playAgainBtnCntr,
         playAgainBtn,
+        displayAnnouncerMessage,
+        announceGameResult,
+        removePromptedTexts,
     };
 })();
 
@@ -90,14 +130,14 @@ const playerO = Player('O');
 
 const checker = (() => {
     // playerX represents the user who's marker is X
-    let _isItPlayerXTurn = true;
+    let isItPlayerXTurn = true;
 
     const checkPlayerTurn = (clickedSquare) => {
-        _isItPlayerXTurn ?
+        checker.isItPlayerXTurn ?
             playerX.placeMarker(clickedSquare, clickedSquare.dataset.index) :
             playerO.placeMarker(clickedSquare, clickedSquare.dataset.index);
 
-        _isItPlayerXTurn = !_isItPlayerXTurn;
+        checker.isItPlayerXTurn = !checker.isItPlayerXTurn;
     };
 
     const _winningPatterns = [
@@ -142,52 +182,32 @@ const checker = (() => {
         checker.totalInputtedMarkers++;
     };
 
-    const announceGameResult = (dialogBox, playAgainBtnCntr) => {
-        const gameResult = document.createElement('p');
-        gameResult.setAttribute('id', 'game-result-text');
-        dialogBox.insertBefore(gameResult, playAgainBtnCntr);
-
-        switch (checker.gameWinner) {
-            case 'X':
-            case 'O':
-                gameResult.textContent = `Player ${checker.gameWinner}'s win`;
-                break;
-            case undefined:
-                gameResult.textContent = `Draw`;
-        }
-    };
-
-    const removeGameResult = () => {
-        const gameResult = document.querySelector('#game-result-text');
-        gameResult.remove();
-    };
-
     const revertVariables = () => {
-        _isItPlayerXTurn = true;
+        checker.isItPlayerXTurn = true;
         checker.isGameOver = false;
         checker.gameWinner = undefined;
         checker.totalInputtedMarkers = 0;
     };
 
     return {
+        isItPlayerXTurn,
         checkPlayerTurn,
         isGameOver,
         gameWinner,
         checkGameStatus,
         totalInputtedMarkers,
         incrementTotalInputtedMarkers,
-        announceGameResult,
-        removeGameResult,
         revertVariables,
     };
 })();
+
+displayController.displayAnnouncerMessage(checker.isItPlayerXTurn);
 
 const gameboardSquares = document.querySelectorAll('.gameboard-square');
 gameboardSquares.forEach(square => {
     square.addEventListener('click', (event) => {
         if (event.target.textContent === '') {
             checker.checkPlayerTurn(event.target);
-
             checker.incrementTotalInputtedMarkers();
             /* The least amount of moves before either side could get a winning
             pattern is 5 moves, right? It would be a waste of time to check if
@@ -206,16 +226,17 @@ gameboardSquares.forEach(square => {
                         displayController.dialogBox.showModal();
                     }, 2000);
 
-                    checker.announceGameResult(displayController.dialogBox,
-                        displayController.playAgainBtnCntr);
+                    displayController.announceGameResult();
                 }
             }
+
+            displayController.displayAnnouncerMessage(checker.isItPlayerXTurn);
         }
     });
 });
 
 displayController.playAgainBtn.addEventListener('click', () => {
-    checker.removeGameResult();
+    displayController.removePromptedTexts();
     gameboard.emptyMarks();
     displayController.clearGameboard();
     checker.revertVariables();

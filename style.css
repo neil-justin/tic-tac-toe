@@ -110,7 +110,9 @@ h1 {
     color: black;
 }
 
-#play-again-btn:hover {
+#play-again-btn:hover,
+#play-again-btn:focus {
     cursor: pointer;
     background-color: hsl(0, 0%, 77%);
+    outline: 0px;
 }

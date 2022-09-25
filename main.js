@@ -72,13 +72,17 @@ const displayController = (() => {
     _announcerMessage.setAttribute('id', 'announcer-message');
     _mainContent.insertBefore(_announcerMessage, _gameboardContainer);
 
-    const displayAnnouncerMessage = (isItPlayerXTurn) => {
+    const displayAnnouncerMessage = (marks, isItPlayerXTurn) => {
         if (checker.isGameOver) {
             _announcerMessage.textContent = 'Game Over...';
         } else {
-            isItPlayerXTurn ?
-                _announcerMessage.textContent = 'Player X\'s turn' :
-                _announcerMessage.textContent = 'Player O\'s turn';
+            if (marks.length === 0) {
+                _announcerMessage.textContent = 'Player X, place your marker on the board'
+            } else {
+                isItPlayerXTurn ?
+                    _announcerMessage.textContent = 'Player X\'s turn' :
+                    _announcerMessage.textContent = 'Player O\'s turn';
+            }
         }
     };
 
@@ -100,8 +104,6 @@ const displayController = (() => {
     const removePromptedTexts = () => {
         const gameResult = document.querySelector('#game-result-text');
         gameResult.remove();
-
-        _announcerMessage.textContent = '';
     };
 
     return {
@@ -201,7 +203,7 @@ const checker = (() => {
     };
 })();
 
-displayController.displayAnnouncerMessage(checker.isItPlayerXTurn);
+displayController.displayAnnouncerMessage(gameboard.marks, checker.isItPlayerXTurn);
 
 const gameboardSquares = document.querySelectorAll('.gameboard-square');
 gameboardSquares.forEach(square => {
@@ -230,7 +232,7 @@ gameboardSquares.forEach(square => {
                 }
             }
 
-            displayController.displayAnnouncerMessage(checker.isItPlayerXTurn);
+            displayController.displayAnnouncerMessage(gameboard.marks, checker.isItPlayerXTurn);
         }
     });
 });
@@ -240,4 +242,6 @@ displayController.playAgainBtn.addEventListener('click', () => {
     gameboard.emptyMarks();
     displayController.clearGameboard();
     checker.revertVariables();
+    displayController.displayAnnouncerMessage(gameboard.marks,
+        checker.isItPlayerXTurn);
 });
